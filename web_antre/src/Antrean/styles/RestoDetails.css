@@ -1,0 +1,12 @@
+.rightMiniInfo {
+    text-align: right;
+}
+
+li {
+    list-style: none;
+}
+
+.timeCont{
+    display: flex;
+    flex-direction: column;
+}

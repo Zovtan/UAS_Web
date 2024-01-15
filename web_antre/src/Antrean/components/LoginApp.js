@@ -104,8 +104,8 @@ const LoginApp = () => {
 
             <TextField
               type="email"
-              label="Email atau No. Handphone"
-              placeholder="Email atau No. Handphone"
+              label="Email"
+              placeholder="Email"
               fullWidth
               margin="normal"
               required

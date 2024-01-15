@@ -1,4 +1,5 @@
 const db = require("../database/database.connection");
+const jwt = require('jsonwebtoken');
 
 const readProfiles = async (req, res) => {
   try {
@@ -97,10 +98,50 @@ const deleteProfile = async (req, res) => {
   }
 };
 
+const loginProfile = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const query = "SELECT * FROM profiles WHERE email = ? AND password = ?";
+    const data = await db.query(query, [email, password]);
+
+    if (data[0].length>0) {
+      const token = jwt.sign(
+        {
+          email,
+          password,
+        },
+        "lalilulelo",
+        { expiresIn: "1h" }
+      );
+  
+      res.status(200).json({
+        message: "Login berhasil",
+        data: {
+          token: token,
+        },
+      });
+    } else {
+      res.status(400).json({
+        message: "salah email/password",
+        statusCode: res.status,
+        serverMessage: err,
+      });
+    }
+
+  } catch (err) {
+    res.status(400).json({
+      message: "login profiles fail",
+      statusCode: res.status,
+      serverMessage: err,
+    });
+  }
+};
+
 module.exports = {
   readProfile,
   readProfiles,
   createProfile,
   updateProfile,
   deleteProfile,
+  loginProfile,
 };

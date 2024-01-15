@@ -22,17 +22,17 @@ const readProfiles = async (req, res) => {
 const readProfile = async (req, res) => {
   try {
     const id = req.params.id;
-    const query = "SELECT * FROM profiles WHERE id = ?;";
+    const query = "SELECT * FROM profiles WHERE profile_id = ?;";
     const data = await db.query(query, [id]);
     res.status(200).json({
-      message: "get profiles success",
+      message: "get profile success",
       status: res.statusCode,
       profile: data[0],
     });
   } catch (err) {
     console.log(err);
     res.status(400).json({
-      message: "get profiles fail",
+      message: "get profile fail",
       statusCode: res.status,
       serverMessage: err,
     });
@@ -41,10 +41,10 @@ const readProfile = async (req, res) => {
 
 const createProfile = async (req, res) => {
   try {
-    const { title, dsc, dev, reviews, tags, img } = req.body;
+    const { email, username, password } = req.body;
     const query =
-      "INSERT INTO profiles (title, dsc, dev, reviews, tags, img) VALUES (?, ?, ?, ?, ?, ?)";
-    await db.query(query, [title, dsc, dev, reviews, tags, img]);
+      "INSERT INTO profiles (email, username, password) VALUES (?, ?, ?)";
+    await db.query(query, [email, username, password]);
     res.status(201).json({
       message: "create profiles success",
       status: res.statusCode,
@@ -59,15 +59,13 @@ const createProfile = async (req, res) => {
   }
 };
 
-
-
 const updateProfile = async (req, res) => {
   try {
-    const { title, dsc, dev, reviews, tags, img } = req.body;
+    const { email, username, password } = req.body;
     const id = req.params.id;
     const query =
-      "UPDATE profiles SET title = ?, dsc = ?, dev = ?, reviews = ?, tags = ?, img = ? WHERE id =?";
-    await db.query(query, [title, dsc, dev, reviews, tags, img, id]);
+      "UPDATE profiles SET email = ?, username = ?, password = ? WHERE profile_id = ?";
+    await db.query(query, [email, username, password, id]);
     res.status(200).json({
       message: "updated profiles success",
       status: res.statusCode,
@@ -80,10 +78,11 @@ const updateProfile = async (req, res) => {
     });
   }
 };
+
 const deleteProfile = async (req, res) => {
   try {
     const id = req.params.id;
-    const query = "DELETE FROM profiles WHERE id=?";
+    const query = "DELETE FROM profiles WHERE profile_id = ?";
     await db.query(query, [id]);
     res.status(200).json({
       message: "delete profile success",

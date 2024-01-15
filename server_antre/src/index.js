@@ -19,8 +19,8 @@ app.use(
   })
 );
 
-app.use("/profiles", profileRoutes);
-app.use("/restos", profileRoutes);
+app.use("/profile", profileRoutes);
+app.use("/restoran", restoRoutes);
 
 app.listen(PORT, () => {
   console.log("server berjalan di port", PORT, "...");

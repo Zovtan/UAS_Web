@@ -22,7 +22,7 @@ const readRestos = async (req, res) => {
 const readResto = async (req, res) => {
   try {
     const id = req.params.id;
-    const query = "SELECT * FROM restos WHERE id = ?;";
+    const query = "SELECT * FROM restos WHERE resto_id = ?;";
     const data = await db.query(query, [id]);
     res.status(200).json({
       message: "get restos success",

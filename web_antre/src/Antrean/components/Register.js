@@ -4,9 +4,7 @@ import {
   Box,
   Typography,
   TextField,
-  Checkbox,
   Button,
-  FormControlLabel,
 } from "@mui/material";
 import logoPurp from "../assets/Jumlah.png";
 import "../styles/register.css";

@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-/* import "../styles/login.css"; */
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -14,13 +13,14 @@ import {
 import logoPurp from "../assets/Jumlah.png";
 import Group14 from "../assets/Group 14.png";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const LoginApp = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  
+
   const navigate = useNavigate();
 
   const [isAccountRight, setIsAccountRight] = useState(true);
@@ -29,21 +29,49 @@ const LoginApp = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    // Check against valid credentials
-    if (
-      (email === "antoni@gmail.com" && password === "antoni123") ||
-      (email === "admin@gmail.com" && password === "admin")
-    ) {
-      // Successful login, you can navigate to another page or perform other actions
-      setIsAccountRight(true);
-      navigate("/beranda");
-    } else {
-      // Invalid credentials, display an error message or take appropriate action
+/*   const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }; */
+
+  const handleSubmit = async () => {
+/*     if (!isValidEmail(email)) {
+      console.log("Invalid email format");
+      setIsAccountRight(false)
+      return ;
+    } */
+    try {
+      const response = await axios.post("http://localhost:3031/", {
+        email,
+        password,
+      }, {
+        timeout: 5000, // milliseconds
+      });
+
+      //dibagian ini harus cek response.status
+      if (response.status === 200) {
+        console.log("Success", response.data);
+
+        localStorage.setItem("loggedInStatus", "true");
+        localStorage.setItem("id", response.data.id);
+        localStorage.setItem("token", response.data.token);
+
+        setIsAccountRight(true);
+        navigate("/beranda");
+      } else {
+        console.log("Login Failed", response.data);
+      }
+    } catch (error) {
       setIsAccountRight(false);
+      console.error(error);
     }
   };
+
+useEffect(() => {
+    localStorage.removeItem('loggedInStatus');
+    localStorage.removeItem('id');
+    localStorage.removeItem('token');
+}, []);
 
   return (
     <div
@@ -81,7 +109,7 @@ const LoginApp = () => {
           alignItems: "center",
           justifyContent: "center",
           gap: "5vh",
-          marginTop:"8em"
+          marginTop: "8em",
         }}
       >
         <Box
@@ -135,17 +163,18 @@ const LoginApp = () => {
                 alignItems: "center",
               }}
             >
-                        {!isAccountRight && (
-            <Typography color="error" >
-              Email atau password salah!
-            </Typography>
-          )}
+              {!isAccountRight && (
+                <Typography color="error">
+                  Email atau password salah!
+                </Typography>
+              )}
               <Button
                 type="submit"
                 size="large"
                 variant="contained"
                 color="primary"
                 sx={{ width: "100%", marginY: "3vh" }}
+                onClick={handleSubmit}
               >
                 Masuk
               </Button>

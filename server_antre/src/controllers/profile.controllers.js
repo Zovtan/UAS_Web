@@ -104,21 +104,22 @@ const loginProfile = async (req, res) => {
     const query = "SELECT * FROM profiles WHERE email = ? AND password = ?";
     const data = await db.query(query, [email, password]);
 
-    if (data[0].length>0) {
+    if (data[0].length>0 && data[0][0]) {
+      const profileId = data[0][0].profile_id; //mengambil profile_id
+      
       const token = jwt.sign(
         {
           email,
           password,
         },
         "lalilulelo",
-        { expiresIn: "1h" }
+        { expiresIn: "3 days" }
       );
-  
+
       res.status(200).json({
         message: "Login berhasil",
-        data: {
-          token: token,
-        },
+        id: profileId,
+        token: token,
       });
     } else {
       res.status(400).json({

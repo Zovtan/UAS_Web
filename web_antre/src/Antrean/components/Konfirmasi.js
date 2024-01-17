@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
-import restaurants from "../data/Restaurants";
 import dayjs from "dayjs";
 import {
   Button,
@@ -24,6 +23,8 @@ import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
 import { useNavigate } from "react-router-dom";
 import KontakImg from "../assets/kontak info.png";
 import InfoReservasi from "../assets/reservasi info.png";
+import LoyaltyIcon from "@mui/icons-material/Loyalty";
+import axios from "axios";
 
 const Konfirmasi = () => {
   //mengperbolehkan pengambilan data dari url
@@ -32,17 +33,13 @@ const Konfirmasi = () => {
 
   // mengambil data dari URL
   const id = queryParams.get("id");
+  const nama = queryParams.get("nama");
   const esWaktu = queryParams.get("esWaktu");
   const tanggal = queryParams.get("tanggal");
   const tanggalRumus = queryParams.get("tanggalRumus");
   const waktu = queryParams.get("waktu");
   const jumlahOrang = queryParams.get("jumlahOrang");
   const kodePromo = queryParams.get("kodePromo");
-
-  // membandingkan data id dari URL dengan data restoran agar dapat menggunakan data dari situ
-  const restaurant = restaurants.find(
-    (restaurant) => restaurant.id === parseInt(id, 10)
-  );
 
   // Get the current time
   const currentTime = new Date();
@@ -125,11 +122,30 @@ const Konfirmasi = () => {
     closePopup();
   };
 
+    //menarik id dari local storage
+    const userId = localStorage.getItem('id');
+    const [user, setUser] = useState([]);
+  
+    //fetch profile pengguna
+    useEffect(() => {
+      const fetchRestos = async () => {
+        try {
+          const response = await axios.get(`http://localhost:3031/profile/${userId}`); 
+          setUser(response.data.profile[0]);
+          console.log(response.data.profile[0]);
+        } catch (err) {
+          console.error("Error fetching data:", err);
+        }
+      };
+  
+      fetchRestos(); //refresh sendiri
+    }, []);
+
   return (
     <>
       <Navbar />
       <Typography variant="h4" mt="5rem" textAlign="center" fontWeight="bolder">
-        {restaurant.nama}
+        {nama}
       </Typography>
       <Container
         disableGutters
@@ -216,7 +232,12 @@ const Konfirmasi = () => {
                   </p>
                 )}
               </Typography>
-              <Typography></Typography>
+              <Typography>
+                {kodePromo ? (
+                  <LoyaltyIcon color="primary" sx={{ translate: "0 0.7vh" }} />
+                ) : null}
+                {kodePromo}
+              </Typography>
             </CardContent>
           </Card>
         </Box>
@@ -265,7 +286,7 @@ const Konfirmasi = () => {
               <TextField
                 label="Nama"
                 variant="standard"
-                value="Antoni"
+                value={user.username}
                 placeholder="Masukkan nama..."
                 required
                 fullWidth
@@ -281,7 +302,7 @@ const Konfirmasi = () => {
               <TextField
                 label="Email"
                 variant="standard"
-                value="Antoni@gmail.com"
+                value={user.email}
                 placeholder="Masukkan email..."
                 required
                 fullWidth
@@ -290,17 +311,19 @@ const Konfirmasi = () => {
           </Card>
         </Box>
       </Container>
-      <Box         sx={{
+      <Box
+        sx={{
           display: "flex",
           justifyContent: "center",
-          margin: "5vh 0vh"
-        }}>
+          margin: "5vh 0vh",
+        }}
+      >
         <Button variant="contained" size="large" onClick={openPopup}>
           Konfirmasi
         </Button>
       </Box>
 
-      <Box sx={{ml:"3vh", pb:"3vh"}}>
+      <Box sx={{ ml: "3vh", pb: "3vh" }}>
         <Button
           variant="text"
           size="large"

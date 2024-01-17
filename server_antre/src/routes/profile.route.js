@@ -7,9 +7,9 @@ const authenticateToken = require("../middlewares/auth.js");
 routes.post("/login", profileControllers.loginProfile);
 routes.post("/register", profileControllers.registerProfile);
 routes.get("/test/get",authenticateToken, profileControllers.readProfiles);
-routes.get("/beranda/profile/:id", profileControllers.readProfile);
+routes.get("/:id", profileControllers.readProfile);
 routes.post("/test/regiter", profileControllers.createProfile);
-routes.patch("/profile/:id", profileControllers.updateProfile);
-routes.delete("/profile/:id", profileControllers.deleteProfile);
+routes.patch("/:id", profileControllers.updateProfile);
+routes.delete("/:id", profileControllers.deleteProfile);
 
 module.exports = routes;

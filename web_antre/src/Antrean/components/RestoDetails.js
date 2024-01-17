@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import restaurants from "../data/Restaurants";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "../styles/RestoDetails.css";
 import Navbar from "./Navbar.js";
@@ -32,21 +31,29 @@ import LoyaltyIcon from "@mui/icons-material/Loyalty";
 import PersonIcon from "@mui/icons-material/Person";
 import PeopleIcon from "@mui/icons-material/People";
 import GroupsIcon from "@mui/icons-material/Groups";
+import axios from "axios";
 
 const RestoDetails = () => {
-  //apakah form terbuka?
+  const [restaurant, setRestaurant] = useState([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
-
-  /* mengambil id dari url */
   const { restaurantId } = useParams();
-
-  /* ini berguna utk mencari objek restoran dalam array restaurants yang cocok dengan restaurantId yang diberikan sebagai parameter dalam rute. Ini berfungsi untuk menampilkan detail restoran berdasarkan ID yang diberikan pada halaman deskripsi restoran. */
-  const restaurant = restaurants.find(
-    (restaurant) => restaurant.id === parseInt(restaurantId, 10)
-  );
-
-  /* navigasi ke konfirmasi */
   const navigate = useNavigate();
+
+  useEffect(() => {
+    //fetch resto dgn id dlm url
+    const fetchRestaurantDetails = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3031/restoran/${restaurantId}`);
+        console.log(response.data.resto[0]);
+        setRestaurant(response.data.resto[0]);
+      } catch (error) {
+        console.error("Error fetching restaurant details:", error);
+      }
+    };
+
+    fetchRestaurantDetails();
+  }, [restaurantId]);
+
 
   // State variables to store the input values
   const [tanggal, setTanggal] = useState(dayjs(new Date()));
@@ -129,7 +136,8 @@ const RestoDetails = () => {
     // mengirim data melalui url agar dapat dipakai ulang
     if (isFormValid) {
       const queryParams = new URLSearchParams();
-      queryParams.append("id", restaurant.id);
+      queryParams.append("id", restaurant.resto_id);
+      queryParams.append("nama", restaurant.nama);
       queryParams.append("esWaktu", restaurant.esWaktu);
       queryParams.append("tanggal", tanggal.format("dddd, DD MMMM YYYY"));
       queryParams.append("tanggalRumus", tanggal);
@@ -140,7 +148,7 @@ const RestoDetails = () => {
 
       // Navigate to the "konfirmasi" page with query parameters
       navigate(
-        `/restoran/${restaurant.id}/konfirmasi?${queryParams.toString()}`
+        `/restoran/${restaurant.resto_id}/konfirmasi?${queryParams.toString()}`
       );
     }
   };
@@ -182,12 +190,13 @@ const RestoDetails = () => {
           <Typography variant="h5" fontWeight="bolder">
             {restaurant.nama}
           </Typography>
-          <Rating name="read-only" value={restaurant.rating} readOnly />
+          <Rating name="read-only" value={parseInt(restaurant.rating, 10)} readOnly /> {/* ubah rating jadi int */}
         </span>
 
         <span className="rightMiniInfo">
           <Typography variant="h6" fontWeight="bolder">
-            <LocationOnIcon color="primary" /> {limitAlamat(restaurant.alamat)}
+          <LocationOnIcon color="primary" /> {restaurant.alamat && limitAlamat(restaurant.alamat)}
+
             {/* memotong alamat yg kepanjangan */}
           </Typography>
           <Typography variant="h6" fontWeight="bolder">
@@ -266,11 +275,7 @@ const RestoDetails = () => {
             <Typography>{restaurant.desc}</Typography>
             <Typography>
               Jadwal Kami:
-              <ul>
-                {restaurant.jadwal.map((jadwal, index) => (
-                  <li key={index}>{jadwal}</li>
-                ))}
-              </ul>
+                {restaurant.jadwal}
             </Typography>
           </CardContent>
         </Card>
@@ -330,11 +335,7 @@ const RestoDetails = () => {
             }}
           >
             <Typography>{/* revisi, ada perubahan data di db */}
-              <ul>
-                {restaurant.kontak.socialMedia.map((social, index) => (
-                  <li key={index}>{social}</li>
-                ))}
-              </ul>
+            {restaurant.kontak}
             </Typography>
           </CardContent>
         </Card>

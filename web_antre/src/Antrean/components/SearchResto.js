@@ -123,7 +123,7 @@ const SearchResto = (props) => {
           </Typography>
           <Slider {...settings}>
             {searchResults.map((restaurant, index) => (
-              <Link to={`/restoran/${restaurant.id}`}>
+              <Link to={`/restoran/${restaurant.resto_id}`}>
                 <Card
                   className="cards"
                   key={index}

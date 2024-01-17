@@ -1,60 +1,41 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "./Navbar";
 import Carousel from "./Carousel";
 import RestoCard from "./RestoCard";
 import { Typography } from "@mui/material";
 import SearchResto from "./SearchResto";
 import Footer from "./Footer";
-import restaurants from "../data/Restaurants";
-
-/* import axios from "axios";
-const BASE_URL = "http://localhost:3031/games"; */
+import axios from "axios";
 
 function HomeLayout() {
-  /*   const [restos, setRestos] = useState([]);
-  const fetchRestos = async () => {
-    try {
-      const response = await axios.get(BASE_URL);
-      if (response.data.status === 200) {
-        setRestos(response.data.restos);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const [restos, setRestos] = useState([]);
 
   useEffect(() => {
-    fetchGames();
+    // Fetch data dari mysql
+    const fetchRestos = async () => {
+      try {
+        const response = await axios.get("http://localhost:3031/restoran/"); 
+        setRestos(response.data.restos);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+      }
+    };
+
+    fetchRestos(); //refresh sendiri
   }, []);
 
-  // Filter restaurants by category, e.g., "dekat"
-  const filteredRestaurantsTerdekat = fetchRestos.filter(
-    (restos) => restos.kategori === "terdekat" //restos disini bukan dari useState, tapi dari table mySQL
-  );
-
-  // Filter restaurants by category, e.g., "sponsor"
-  const filteredRestaurantsSponsor = restaurants.filter(
-    (restos) => restos.kategori === "sponsor"
-  );
-
-  // Filter restaurants by category, e.g., "sponsor"
-  const filteredRestaurantsPopuler = restaurants.filter(
-    (restos) => restos.kategori === "populer"
-  );
- */
-
-  // Filter restaurants by category, e.g., "dekat"
-  const filteredRestaurantsTerdekat = restaurants.filter(
+  // Filter restaurants by category, e.g., "terdekat"
+  const filteredRestaurantsTerdekat = restos.filter(
     (restaurant) => restaurant.kategori === "terdekat"
   );
 
   // Filter restaurants by category, e.g., "sponsor"
-  const filteredRestaurantsSponsor = restaurants.filter(
+  const filteredRestaurantsSponsor = restos.filter(
     (restaurant) => restaurant.kategori === "sponsor"
   );
 
   // Filter restaurants by category, e.g., "sponsor"
-  const filteredRestaurantsPopuler = restaurants.filter(
+  const filteredRestaurantsPopuler = restos.filter(
     (restaurant) => restaurant.kategori === "populer"
   );
 
@@ -62,7 +43,7 @@ function HomeLayout() {
     <>
       <Navbar />
       <Carousel />
-      <SearchResto unfilteredRestaurants={restaurants} />
+      <SearchResto unfilteredRestaurants={restos} />
       <Typography
         variant="h4"
         id="terdekat"

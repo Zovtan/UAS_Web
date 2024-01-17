@@ -1,25 +1,21 @@
 import React, { useState } from "react";
-import {
-  Container,
-  Box,
-  Typography,
-  TextField,
-  Button,
-} from "@mui/material";
+import { Container, Box, Typography, TextField, Button } from "@mui/material";
 import logoPurp from "../assets/Jumlah.png";
 import "../styles/register.css";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function RegistrationForm() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    fullName: "",
     username: "",
-    emailOrPhone: "",
+    email: "",
     password: "",
     confirmPassword: "",
   });
+
   const [passwordsMatch, setPasswordsMatch] = useState(true);
+  const [isEmailUnique, setIsEmailUnique] = useState(true);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -29,7 +25,7 @@ function RegistrationForm() {
     });
   };
 
-  const handleSubmit = (e) => {
+  /*   const handleSubmit = (e) => {
     e.preventDefault();
     // Check if passwords match before submitting
     if (formData.password !== formData.confirmPassword) {
@@ -39,6 +35,38 @@ function RegistrationForm() {
     setPasswordsMatch(true);
     // Add your form submission logic here
     navigate("/");
+  }; */
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Check if passwords match before submitting
+    if (formData.password !== formData.confirmPassword) {
+      setPasswordsMatch(false);
+      return;
+    }
+    setPasswordsMatch(true);
+
+    try {
+      // Send a request to the backend to check username availability
+      const response = await axios.post(
+        "http://localhost:3031/profile/register",
+        {
+          email: formData.email,
+          username: formData.username,
+          password: formData.password
+        }
+      );
+
+      if (response.status === 201) {
+        setIsEmailUnique(true)
+        navigate("/");
+      }
+
+    } catch (err) {
+      setIsEmailUnique(false);
+      console.error(err);
+    }
   };
 
   return (
@@ -51,6 +79,7 @@ function RegistrationForm() {
         flexDirection: "column",
         alignItems: "center",
         paddingX: "5vh",
+        height: "100vh",
       }}
     >
       <div
@@ -75,7 +104,7 @@ function RegistrationForm() {
         Daftar Akun
       </Typography>
 
-      <Typography variant="h6" textAlign="center" sx={{mb:"3vh"}}>
+      <Typography variant="h6" textAlign="center" sx={{ mb: "3vh" }}>
         Daftar akun dan dapatkan kemudahan dalam mengantri di restoran favorit
         kamu dan keluarga
       </Typography>
@@ -89,21 +118,11 @@ function RegistrationForm() {
           backgroundColor: "white",
           padding: "5vh",
           width: "70vh",
-          borderRadius:"1vh",
+          borderRadius: "1vh",
         }}
       >
-        <form onSubmit={handleSubmit} style={{width:"100%"}}>
+        <form onSubmit={handleSubmit} style={{ width: "100%" }}>
           <Box>
-            <Box>
-              <Typography className="detail">Nama Lengkap</Typography>
-              <TextField
-                type="text"
-                placeholder="Masukkan Nama Lengkap..."
-                required
-                fullWidth
-                sx={{ mb: "2vh" }}
-              />
-            </Box>
             <Box>
               <Typography className="detail">Nama Pengguna</Typography>
               <TextField
@@ -111,21 +130,27 @@ function RegistrationForm() {
                 placeholder="Masukkan Nama Pengguna..."
                 required
                 fullWidth
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
                 sx={{ mb: "2vh" }}
               />
             </Box>
             <Box>
-              <Typography className="detail">Email / No.Handphone</Typography>
+              <Typography className="detail">Email</Typography>
               <TextField
                 type="email"
-                placeholder="Masukkan Email / No.Hp..."
+                placeholder="Masukkan Email..."
                 required
                 fullWidth
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
                 sx={{ mb: "2vh" }}
               />
             </Box>
             <Box>
-            <Typography className="detail">Katasandi</Typography>
+              <Typography className="detail">Katasandi</Typography>
               <TextField
                 type="password"
                 placeholder="Masukkan Katasandi..."
@@ -137,7 +162,7 @@ function RegistrationForm() {
                 sx={{ mb: "2vh" }}
               />
             </Box>
-          
+
             <Box>
               <Typography className="detail">Ulangi Katasandi</Typography>
               <TextField
@@ -151,15 +176,26 @@ function RegistrationForm() {
                 sx={{ mb: "5vh" }}
               />
             </Box>
-
           </Box>
           {!passwordsMatch && (
             <Typography color="error" sx={{ mb: 2 }}>
               Password tidak sama!
             </Typography>
           )}
+          {!isEmailUnique && (
+            <Typography color="error" sx={{ mb: 2 }}>
+              Email sudah terdaftarkan!
+            </Typography>
+          )}
           <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <Button type="submit" size="large" variant="contained" color="primary" sx={{ width:"100%"}}>
+            <Button
+              type="submit"
+              size="large"
+              variant="contained"
+              color="primary"
+              sx={{ width: "100%" }}
+              onClick={handleSubmit}
+            >
               Daftar
             </Button>
           </Box>

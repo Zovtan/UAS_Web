@@ -34,18 +34,19 @@ const LoginApp = () => {
     return emailRegex.test(email);
   }; */
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // :) sangat perlu
 /*     if (!isValidEmail(email)) {
       console.log("Invalid email format");
       setIsAccountRight(false)
       return ;
     } */
     try {
-      const response = await axios.post("http://localhost:3031/", {
+      const response = await axios.post("http://localhost:3031/profile/login", {
         email,
         password,
       }, {
-        timeout: 5000, // milliseconds
+        timeout: 5000, // 5 seconds
       });
 
       //dibagian ini harus cek response.status
@@ -61,18 +62,18 @@ const LoginApp = () => {
       } else {
         console.log("Login Failed", response.data);
       }
-    } catch (error) {
+    } catch (err) {
       setIsAccountRight(false);
-      console.error(error);
+      console.error(err);
     }
   };
 
-useEffect(() => {
+/* useEffect(() => {
     localStorage.removeItem('loggedInStatus');
     localStorage.removeItem('id');
     localStorage.removeItem('token');
 }, []);
-
+ */
   return (
     <div
       className="log-container"

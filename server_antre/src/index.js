@@ -19,7 +19,7 @@ app.use(
   })
 );
 
-app.use("/", profileRoutes);
+app.use("/profile", profileRoutes);
 app.use("/restoran", restoRoutes);
 
 app.listen(PORT, () => {

@@ -61,7 +61,7 @@ function RegistrationForm() {
       if (response.status === 201) {
         setIsEmailUnique(true)
         alert("Registrasi Berhasil")
-        navigate("/");
+        navigate("/login");
       }
 
     } catch (err) {

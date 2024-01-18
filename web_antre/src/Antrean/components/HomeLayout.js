@@ -2,22 +2,25 @@ import React, { useState, useEffect } from "react";
 import Navbar from "./Navbar";
 import Carousel from "./Carousel";
 import RestoCard from "./RestoCard";
-import { Typography } from "@mui/material";
+import { Typography, CircularProgress } from "@mui/material";
 import SearchResto from "./SearchResto";
 import Footer from "./Footer";
 import axios from "axios";
 
 function HomeLayout() {
   const [restos, setRestos] = useState([]);
+  const [loading, setLoading] = useState(true); // State to track loading status
 
   useEffect(() => {
     // Fetch data dari mysql
     const fetchRestos = async () => {
       try {
-        const response = await axios.get("http://localhost:3031/restoran/"); 
+        const response = await axios.get("http://localhost:3031/restoran/");
         setRestos(response.data.restos);
+        setLoading(false); // Set loading to false once data is fetched
       } catch (err) {
         console.error("Error fetching data:", err);
+        setLoading(false); // Set loading to false in case of an error
       }
     };
 
@@ -38,6 +41,15 @@ function HomeLayout() {
   const filteredRestaurantsPopuler = restos.filter(
     (restaurant) => restaurant.kategori === "populer"
   );
+
+  if (loading) {
+    return (
+      // Loading screen
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+        <CircularProgress />
+      </div>
+    );
+  }
 
   return (
     <>

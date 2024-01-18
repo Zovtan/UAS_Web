@@ -55,11 +55,12 @@ const LoginApp = () => {
 
         localStorage.setItem("loggedInStatus", "true");
         localStorage.setItem("id", response.data.id);
+        localStorage.setItem("username", response.data.username);
         localStorage.setItem("token", response.data.token);
 
         setIsAccountRight(true);
         alert("Login Berhasil")
-        navigate("/beranda");
+        navigate("/");
       } else {
         console.log("Login Failed", response.data);
       }
@@ -72,6 +73,7 @@ const LoginApp = () => {
 useEffect(() => {
     localStorage.removeItem('loggedInStatus');
     localStorage.removeItem('id');
+    localStorage.removeItem('username');
     localStorage.removeItem('token');
 }, []);
 

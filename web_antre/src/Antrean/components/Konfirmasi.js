@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import axios from "axios";
 import Navbar from "./Navbar";
 import dayjs from "dayjs";
 import {
@@ -15,6 +16,7 @@ import {
   DialogActions,
   DialogContent,
   Box,
+  InputAdornment,
 } from "@mui/material";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import GroupsIcon from "@mui/icons-material/Groups";
@@ -24,7 +26,10 @@ import { useNavigate } from "react-router-dom";
 import KontakImg from "../assets/kontak info.png";
 import InfoReservasi from "../assets/reservasi info.png";
 import LoyaltyIcon from "@mui/icons-material/Loyalty";
-import axios from "axios";
+import EmailIcon from '@mui/icons-material/Email';
+import PhoneIcon from '@mui/icons-material/Phone';
+
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 const Konfirmasi = () => {
   //mengperbolehkan pengambilan data dari url
@@ -122,24 +127,27 @@ const Konfirmasi = () => {
     closePopup();
   };
 
-    //menarik id dari local storage
-    const userId = localStorage.getItem('id');
-    const [user, setUser] = useState([]);
-  
-    //fetch profile pengguna
-    useEffect(() => {
-      const fetchRestos = async () => {
-        try {
-          const response = await axios.get(`http://localhost:3031/profile/${userId}`); 
-          setUser(response.data.profile[0]);
-          console.log(response.data.profile[0]);
-        } catch (err) {
-          console.error("Error fetching data:", err);
-        }
-      };
-  
-      fetchRestos(); //refresh sendiri
-    }, []);
+  //menarik id dari local storage
+  const userId = localStorage.getItem("id");
+  const [user, setUser] = useState([]);
+
+  //fetch profile pengguna
+  useEffect(() => {
+    const fetchRestos = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(
+          `http://localhost:3031/profile/${userId}`,
+          { headers: { auth: token } }
+        );
+        setUser(response.data.profile[0]);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+      }
+    };
+
+    fetchRestos(); //refresh sendiri
+  }, [userId]);
 
   return (
     <>
@@ -285,27 +293,42 @@ const Konfirmasi = () => {
             >
               <TextField
                 label="Nama"
-                variant="standard"
+                color="primary"
                 value={user.username}
-                placeholder="Masukkan nama..."
-                required
-                fullWidth
-              />
-
-              <TextField
-                label="No. HP"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <AccountCircleIcon color="primary" />
+                    </InputAdornment>
+                  ),
+                }}
                 variant="standard"
-                placeholder="(Opsional) Masukkan nomor HP..."
-                fullWidth
               />
-
               <TextField
                 label="Email"
-                variant="standard"
+                color="primary"
                 value={user.email}
-                placeholder="Masukkan email..."
-                required
-                fullWidth
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <EmailIcon color="primary" />
+                    </InputAdornment>
+                  ),
+                }}
+                variant="standard"
+              />
+              <TextField
+                label="No. Telpon"
+                color="primary"
+                value={user.noHp}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <PhoneIcon color="primary" />
+                    </InputAdornment>
+                  ),
+                }}
+                variant="standard"
               />
             </CardContent>
           </Card>

@@ -38,9 +38,13 @@ function Navbar() {
   //handling navigasi
   const navigate = useNavigate()
 
-  const handleNav = (restoran) => {
-    navigate(`${restoran}`)
+  const handleNav = (target) => {
+    navigate(`${target}`)
   }
+
+  //ambil data pengguna utk pfp dan navigasi
+  const pfp = localStorage.getItem("username")
+  const profileId = localStorage.getItem("id")
 
   return (
     <AppBar position="fixed">
@@ -60,7 +64,7 @@ function Navbar() {
             variant="h6"
             noWrap
             component="a"
-            href="/beranda"
+            href="/"
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
@@ -103,17 +107,17 @@ function Navbar() {
                 display: { xs: "block", md: "none" },
               }}
             >
-              <MenuItem onClick={() => {handleNav("/beranda")}}>
+              <MenuItem onClick={() => {handleNav("/")}}>
                 <Typography textAlign="center">Beranda</Typography>
               </MenuItem>
               <MenuItem >
-                <Link href="/beranda#terdekat" textAlign="center" sx={{textDecoration:"none", color:"black"}}>Restoran Terdekat</Link>
+                <Link href="/#terdekat" textAlign="center" sx={{textDecoration:"none", color:"black"}}>Restoran Terdekat</Link>
               </MenuItem>
               <MenuItem >
-                <Link href="/beranda#sponsor" textAlign="center" sx={{textDecoration:"none", color:"black"}}>Restoran Sponsor</Link>
+                <Link href="/#sponsor" textAlign="center" sx={{textDecoration:"none", color:"black"}}>Restoran Sponsor</Link>
               </MenuItem>
               <MenuItem >
-                <Link href="/beranda#populer" textAlign="center" sx={{textDecoration:"none", color:"black"}}>Restoran Populer</Link>
+                <Link href="/#populer" textAlign="center" sx={{textDecoration:"none", color:"black"}}>Restoran Populer</Link>
               </MenuItem>
               <MenuItem onClick={handleCloseNavMenu}>
                 <Typography textAlign="center">Riwayat</Typography>
@@ -134,7 +138,7 @@ function Navbar() {
             variant="h5"
             noWrap
             component="a"
-            href="/beranda"
+            href="/"
             sx={{
               mr: 2,
               display: { xs: "flex", md: "none" },
@@ -151,28 +155,28 @@ function Navbar() {
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             
             <Button
-            href="/beranda"
+            href="/"
               onClick={handleCloseNavMenu}
               sx={{ my: 2, color: "white", display: "block" }}
             >
               Beranda
             </Button>
             <Button
-            href="/beranda#terdekat"
+            href="/#terdekat"
               onClick={handleCloseNavMenu}
               sx={{ my: 2, color: "white", display: "block" }}
             >
               Restoran Terdekat
             </Button>
             <Button
-            href="/beranda#sponsor"
+            href="/#sponsor"
               onClick={handleCloseNavMenu}
               sx={{ my: 2, color: "white", display: "block" }}
             >
               Restoran Sponsor
             </Button>
             <Button
-            href="/beranda#populer"
+            href="/#populer"
               onClick={handleCloseNavMenu}
               sx={{ my: 2, color: "white", display: "block" }}
             >
@@ -189,7 +193,7 @@ function Navbar() {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Antoni" src="/static/images/avatar/2.jpg" />
+                <Avatar alt={pfp} src="/static/images/avatar/2.jpg" />
               </IconButton>
             </Tooltip>
             <Menu
@@ -208,13 +212,13 @@ function Navbar() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              <MenuItem onClick={handleCloseUserMenu}>
+              <MenuItem onClick={() => {handleNav(`/profil/${profileId}`)}}>
                 <Typography textAlign="center">Profil</Typography>
               </MenuItem>
               <MenuItem onClick={handleCloseUserMenu}>
                 <Typography textAlign="center">Pengaturan</Typography>
               </MenuItem>
-              <MenuItem  onClick={() => {handleNav("/")} }>
+              <MenuItem  onClick={() => {handleNav("/login")} }>
                 <Typography textAlign="center" color="error">Log Out</Typography>
               </MenuItem>
             </Menu>

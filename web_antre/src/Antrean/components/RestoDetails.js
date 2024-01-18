@@ -43,7 +43,9 @@ const RestoDetails = () => {
     //fetch resto dgn id dlm url
     const fetchRestaurantDetails = async () => {
       try {
-        const response = await axios.get(`http://localhost:3031/restoran/${restaurantId}`);
+        const response = await axios.get(
+          `http://localhost:3031/restoran/${restaurantId}`
+        );
         console.log(response.data.resto[0]);
         setRestaurant(response.data.resto[0]);
       } catch (error) {
@@ -53,7 +55,6 @@ const RestoDetails = () => {
 
     fetchRestaurantDetails();
   }, [restaurantId]);
-
 
   // State variables to store the input values
   const [tanggal, setTanggal] = useState(dayjs(new Date()));
@@ -76,27 +77,26 @@ const RestoDetails = () => {
       return;
     }
 
-   
-      // Validasi kelengkapan
-  if (!tanggal.isValid() || !waktu.isValid()) {
-    // Disable submit when date or time is not valid. pakai alert karna g bisa pake helper text
-    alert("Mohon isi tanggal dan waktu dengan lengkap")
-    isFormValid = false;
-    return;
-  }
-  
- //validasi tanggal masa lalu
+    // Validasi kelengkapan
+    if (!tanggal.isValid() || !waktu.isValid()) {
+      // Disable submit when date or time is not valid. pakai alert karna g bisa pake helper text
+      alert("Mohon isi tanggal dan waktu dengan lengkap");
+      isFormValid = false;
+      return;
+    }
+
+    //validasi tanggal masa lalu
     const currentDate = dayjs().startOf("day"); // Set the time components to the start of the day
     const selectedDate = tanggal.startOf("day"); // Set the time components of the selected date to the start of the day
 
     if (selectedDate.isBefore(currentDate)) {
       // Disable submit when a past date is picked.
-      alert("Tidak dapat memilih tanggal yang sudah lewat")
+      alert("Tidak dapat memilih tanggal yang sudah lewat");
       isFormValid = false;
     }
 
-// cara hitung outdated, dibawah patch menit terakhir dgn penjelasan
-/*     //validasi waktu masa lalu tapi diberi kelegaan 5 menit agar tdk ditolak pada detik pertama di buat form
+    // cara hitung outdated, dibawah patch menit terakhir dgn penjelasan
+    /*     //validasi waktu masa lalu tapi diberi kelegaan 5 menit agar tdk ditolak pada detik pertama di buat form
     const currentTime = dayjs().subtract(5, "minutes");
     const selectedTime = waktu; // Set the time components to the start of the minute
     
@@ -108,30 +108,31 @@ const RestoDetails = () => {
 
     //berikut adalah pengecekan yg lbh akurat dgn kode yg sama dari konfirmasi.js
     const currentTime = new Date();
-    const [givenHours, givenMinutes] = waktu.format("HH mm").split(" ").map(Number); //mengambil jam dan menit dan di pisah dalah nilai masing2 serta diubah menjadi int
+    const [givenHours, givenMinutes] = waktu
+      .format("HH mm")
+      .split(" ")
+      .map(Number); //mengambil jam dan menit dan di pisah dalah nilai masing2 serta diubah menjadi int
 
     //total menit waktu sekarang
     const currentTotalMinutes =
-    currentTime.getHours() * 60 + currentTime.getMinutes();
-  const givenTotalMinutes = givenHours * 60 + givenMinutes + 5; //+5 utk memberi kelonggaaran saat menginput form
-  
-    //selisih total menit input dgn total menit sekarang 
-    let timeDifferenceMinutes =
-    givenTotalMinutes - currentTotalMinutes
+      currentTime.getHours() * 60 + currentTime.getMinutes();
+    const givenTotalMinutes = givenHours * 60 + givenMinutes + 5; //+5 utk memberi kelonggaaran saat menginput form
+
+    //selisih total menit input dgn total menit sekarang
+    let timeDifferenceMinutes = givenTotalMinutes - currentTotalMinutes;
 
     //selisih total menit hari ini dengan total menit hari yg di input
-    const dayMinutesDifference = -1 * dayjs().diff(tanggal, "minutes"); 
-  
+    const dayMinutesDifference = -1 * dayjs().diff(tanggal, "minutes");
+
     //jika selisih positif berarti
     if (dayMinutesDifference > 0) {
-    timeDifferenceMinutes += dayMinutesDifference;
-  }
-
-    if (timeDifferenceMinutes < 0){
-      alert("Tidak dapat memilih waktu yang sudah lewat")
-      isFormValid = false;
+      timeDifferenceMinutes += dayMinutesDifference;
     }
 
+    if (timeDifferenceMinutes < 0) {
+      alert("Tidak dapat memilih waktu yang sudah lewat");
+      isFormValid = false;
+    }
 
     // mengirim data melalui url agar dapat dipakai ulang
     if (isFormValid) {
@@ -150,6 +151,18 @@ const RestoDetails = () => {
       navigate(
         `/restoran/${restaurant.resto_id}/konfirmasi?${queryParams.toString()}`
       );
+    }
+  };
+
+  const checkLogin = () => {
+    // Cek status login
+    const loggedInStatus = localStorage.getItem("loggedInStatus");
+    // jika blm login, redirect ke login
+    if (loggedInStatus === null || loggedInStatus === "false") {
+      alert("Kalau mau mulai ngantri, login dulu!");
+      navigate("/login");
+    } else {
+      setIsFormOpen(true)
     }
   };
 
@@ -173,7 +186,10 @@ const RestoDetails = () => {
           component="img"
           src={restaurant.img}
           alt={restaurant.nama}
-          sx={{ width: {xs:"80vh", md:"120vh"}, height: {xs:"40vh", md:"45vh"} }}
+          sx={{
+            width: { xs: "80vh", md: "120vh" },
+            height: { xs: "40vh", md: "45vh" },
+          }}
         />
       </Container>
 
@@ -182,21 +198,26 @@ const RestoDetails = () => {
         sx={{
           display: "flex",
           justifyContent: "space-between",
-          mt:"2vh",
-          padding:{xs:"none", md:"0 15vh"},
+          mt: "2vh",
+          padding: { xs: "none", md: "0 15vh" },
         }}
       >
         <span>
           <Typography variant="h5" fontWeight="bolder">
             {restaurant.nama}
           </Typography>
-          <Rating name="read-only" value={parseInt(restaurant.rating, 10)} readOnly /> {/* ubah rating jadi int */}
+          <Rating
+            name="read-only"
+            value={parseInt(restaurant.rating, 10)}
+            readOnly
+          />{" "}
+          {/* ubah rating jadi int */}
         </span>
 
         <span className="rightMiniInfo">
           <Typography variant="h6" fontWeight="bolder">
-          <LocationOnIcon color="primary" /> {restaurant.alamat && limitAlamat(restaurant.alamat)}
-
+            <LocationOnIcon color="primary" />{" "}
+            {restaurant.alamat && limitAlamat(restaurant.alamat)}
             {/* memotong alamat yg kepanjangan */}
           </Typography>
           <Typography variant="h6" fontWeight="bolder">
@@ -212,10 +233,10 @@ const RestoDetails = () => {
           display: "flex",
           justifyContent: "center",
           flexDirection: { xs: "column", md: "row" },
-          alignItems: {xs:"center", md:"revert"},
+          alignItems: { xs: "center", md: "revert" },
           marginTop: "3vh",
           gap: "3vh",
-          padding:{xs:"0", md:"0vh 5vh"}
+          padding: { xs: "0", md: "0vh 5vh" },
         }}
       >
         <Box
@@ -256,7 +277,7 @@ const RestoDetails = () => {
         <Card
           sx={{
             flex: "0 0 auto",
-            width: {xs:"80%",md:"48vh"},
+            width: { xs: "80%", md: "48vh" },
             textAlign: { xs: "center", md: "start" },
           }}
         >
@@ -273,9 +294,10 @@ const RestoDetails = () => {
             }}
           >
             <Typography>{restaurant.desc}</Typography>
-            <Typography>
+            <Typography sx={{ whiteSpace: "pre-line" }}>
               Jadwal Kami:
-                {restaurant.jadwal}
+              <br />
+              {restaurant.jadwal}
             </Typography>
           </CardContent>
         </Card>
@@ -318,7 +340,7 @@ const RestoDetails = () => {
         <Card
           sx={{
             flex: "0 0 auto",
-            width: {xs:"80%",md:"48vh"},
+            width: { xs: "80%", md: "48vh" },
             textAlign: { xs: "center", md: "end" },
           }}
         >
@@ -334,8 +356,8 @@ const RestoDetails = () => {
               gap: "1vh",
             }}
           >
-            <Typography>{/* revisi, ada perubahan data di db */}
-            {restaurant.kontak}
+            <Typography sx={{ whiteSpace: "pre-line" }}>
+              {restaurant.kontak}
             </Typography>
           </CardContent>
         </Card>
@@ -345,25 +367,25 @@ const RestoDetails = () => {
         sx={{
           display: "flex",
           justifyContent: "center",
-          margin: "5vh 0vh"
+          margin: "5vh 0vh",
         }}
       >
         <Button
           variant="contained"
           size="large"
-          onClick={() => setIsFormOpen(true)}
+          onClick={()=>{checkLogin()}}
         >
           Antri
         </Button>
       </Box>
 
-      <Box sx={{ml:"3vh", pb:"3vh"}}>
-      <Button
+      <Box sx={{ ml: "3vh", pb: "3vh" }}>
+        <Button
           variant="text"
           color="error"
           size="large"
           onClick={() => {
-            navigate("/beranda");
+            navigate("/");
           }}
         >
           Kembali
@@ -423,15 +445,13 @@ const RestoDetails = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setIsFormOpen(false)} color="error">
-            Cancel
+            Batal
           </Button>
           <Button onClick={handleFormSubmit} color="primary">
-            Submit
+            Kirim
           </Button>
         </DialogActions>
       </Dialog>
-
-      
 
       {/*       <>
       {isFormValid ? null : (

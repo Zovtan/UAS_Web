@@ -8,6 +8,8 @@ import Konfirmasi from "./components/Konfirmasi";
 import Congratulation from "./components/Congratulation";
 import LoginApp from "./components/LoginApp"
 import Register from "./components/Register"
+import Profile from "./components/Profile"
+
 
 const AntreanApp = () => {
   //theme utama Antrean
@@ -31,14 +33,14 @@ const AntreanApp = () => {
     <ThemeProvider theme={theme}>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<LoginApp />} />
+        <Route path="/" element={<HomeLayout />} />
+          <Route path="/login" element={<LoginApp />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/beranda" element={<HomeLayout />} />
           <Route path="/restoran/:restaurantId" element={<RestoDetails />} />
           <Route path="/restoran/:restaurantId/konfirmasi" element={<Konfirmasi />} />
           <Route path="/selamat!" element={<Congratulation/>}/>
+          <Route path="/profil/:profileId" element={<Profile/>}/>
           <Route path="*" element={<NotFound />} />
-          {/* Catch-all route for Not Found */}
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

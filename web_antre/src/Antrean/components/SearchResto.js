@@ -122,11 +122,10 @@ const SearchResto = (props) => {
             Hasil Carian
           </Typography>
           <Slider {...settings}>
-            {searchResults.map((restaurant, index) => (
-              <Link to={`/restoran/${restaurant.resto_id}`}>
+            {searchResults.map((restaurant) => (
+              <Link key={restaurant.resto_id} to={`/restoran/${restaurant.resto_id}`}>
                 <Card
                   className="cards"
-                  key={index}
                   sx={{ flex: "0 0 auto", width: { xs: "23vh", md: "30vh" } }}
                 >
                   <CardMedia

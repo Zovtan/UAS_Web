@@ -9,7 +9,7 @@ const Congratulation = () => {
   // Use useEffect to navigate back to the home page after 5 seconds
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      navigate("/beranda"); // Navigate back to the home page
+      navigate("/"); // Navigate back to the home page
     }, 5000); // 5000 milliseconds = 5 seconds
 
     // Clear the timeout to prevent any unexpected navigation if the component unmounts

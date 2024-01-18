@@ -1,10 +1,9 @@
-import logo from './logo.svg';
 import './App.css';
-import AntreanApp from './Antrean/AntreanApp';
+import AntreanRoutes from './Antrean/AntreanRoutes';
 
 function App() {
   return (
-<AntreanApp/>
+<AntreanRoutes/>
   );
 }
 

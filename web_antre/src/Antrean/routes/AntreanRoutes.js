@@ -1,14 +1,14 @@
 import React from "react";
-import HomeLayout from "./components/HomeLayout";
+import HomeLayout from "../pages/HomeLayout";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import RestoDetails from "./components/RestoDetails";
-import NotFound from "./components/NotFound"; // Import the Not Found component
+import RestoDetails from "../pages/RestoDetails";
+import NotFound from "../pages/NotFound"; // Import the Not Found component
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import Konfirmasi from "./components/Konfirmasi";
-import Congratulation from "./components/Congratulation";
-import LoginApp from "./components/LoginApp"
-import Register from "./components/Register"
-import Profile from "./components/Profile"
+import Konfirmasi from "../pages/Konfirmasi";
+import Congratulation from "../pages/Congratulation";
+import LoginApp from "../pages/LoginApp"
+import Register from "../pages/Register"
+import Profile from "../pages/Profile"
 
 
 const AntreanApp = () => {

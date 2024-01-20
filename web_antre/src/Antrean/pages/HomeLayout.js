@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "./Navbar";
-import Carousel from "./Carousel";
-import RestoCard from "./RestoCard";
+import Navbar from "../components/Navbar";
+import Carousel from "../components/Carousel";
+import RestoCard from "../components/RestoCard";
 import { Typography, CircularProgress } from "@mui/material";
-import SearchResto from "./SearchResto";
-import Footer from "./Footer";
+import SearchResto from "../components/SearchResto";
+import Footer from "../components/Footer";
 import axios from "axios";
 
 function HomeLayout() {

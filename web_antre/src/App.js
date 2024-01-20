@@ -1,5 +1,5 @@
 import './App.css';
-import AntreanRoutes from './Antrean/AntreanRoutes';
+import AntreanRoutes from './Antrean/routes/AntreanRoutes';
 
 function App() {
   return (

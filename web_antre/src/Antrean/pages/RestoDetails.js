@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "../styles/RestoDetails.css";
-import Navbar from "./Navbar.js";
+import Navbar from "../components/Navbar.js";
 import NotFound from "./NotFound.js";
 import {
   Button,
@@ -21,7 +21,7 @@ import {
 } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import GpsFixedIcon from "@mui/icons-material/GpsFixed";
-import { limitAlamat } from "./utils/limitTexts.js";
+import { limitAlamat } from "../components/utils/limitTexts.js";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -46,7 +46,6 @@ const RestoDetails = () => {
         const response = await axios.get(
           `http://localhost:3031/restoran/${restaurantId}`
         );
-        console.log(response.data.resto[0]);
         setRestaurant(response.data.resto[0]);
       } catch (error) {
         console.error("Error fetching restaurant details:", error);

@@ -10,12 +10,14 @@ function RegistrationForm() {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
+    noHp: "",
     password: "",
     confirmPassword: "",
   });
 
   const [passwordsMatch, setPasswordsMatch] = useState(true);
   const [isEmailUnique, setIsEmailUnique] = useState(true);
+  const [isFormValid, setIsFormValid] = useState(true);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -46,6 +48,7 @@ function RegistrationForm() {
       return;
     }
     setPasswordsMatch(true);
+    setIsFormValid(true);
 
     try {
       // Send a request to the backend to check username availability
@@ -53,20 +56,25 @@ function RegistrationForm() {
         "http://localhost:3031/profile/register",
         {
           email: formData.email,
+          noHp: formData.noHp,
           username: formData.username,
-          password: formData.password
+          password: formData.password,
+          confirmPassword: formData.confirmPassword
         }
       );
 
       if (response.status === 201) {
-        setIsEmailUnique(true)
-        alert("Registrasi Berhasil")
+        setIsEmailUnique(true);
+        alert("Registrasi Berhasil");
         navigate("/login");
-      }
-
+      }/*  else if (response.status === 401) {
+        setIsFormValid(false);
+      } else if (response.status === 409){
+        setIsEmailUnique(false)
+      } */
     } catch (err) {
-      setIsEmailUnique(false);
       console.error(err);
+      setIsFormValid(false);
     }
   };
 
@@ -80,7 +88,7 @@ function RegistrationForm() {
         flexDirection: "column",
         alignItems: "center",
         paddingX: "5vh",
-        height: "100vh",
+        height: "100%",
       }}
     >
       <div
@@ -151,6 +159,18 @@ function RegistrationForm() {
               />
             </Box>
             <Box>
+              <Typography className="detail">No. Telpon</Typography>
+              <TextField
+                type="text"
+                placeholder="(Opsional) Masukkan No. Telpon..."
+                fullWidth
+                name="noHp"
+                value={formData.noHp}
+                onChange={handleChange}
+                sx={{ mb: "2vh" }}
+              />
+            </Box>
+            <Box>
               <Typography className="detail">Katasandi</Typography>
               <TextField
                 type="password"
@@ -186,6 +206,11 @@ function RegistrationForm() {
           {!isEmailUnique && (
             <Typography color="error" sx={{ mb: 2 }}>
               Email sudah terdaftarkan!
+            </Typography>
+          )}
+          {!isFormValid && (
+            <Typography color="error" sx={{ mb: 2 }}>
+              Mohon isi form dengan benar!
             </Typography>
           )}
           <Box sx={{ display: "flex", justifyContent: "center" }}>

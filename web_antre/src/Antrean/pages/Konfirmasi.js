@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
-import Navbar from "./Navbar";
+import Navbar from "../components/Navbar";
 import dayjs from "dayjs";
 import {
   Button,
@@ -26,12 +26,23 @@ import { useNavigate } from "react-router-dom";
 import KontakImg from "../assets/kontak info.png";
 import InfoReservasi from "../assets/reservasi info.png";
 import LoyaltyIcon from "@mui/icons-material/Loyalty";
-import EmailIcon from '@mui/icons-material/Email';
-import PhoneIcon from '@mui/icons-material/Phone';
+import EmailIcon from "@mui/icons-material/Email";
+import PhoneIcon from "@mui/icons-material/Phone";
 
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 const Konfirmasi = () => {
+  const navigate = useNavigate();
+  // Cek status login
+  useEffect(() => {
+    const loggedInStatus = localStorage.getItem("loggedInStatus");
+    // jika blm login, redirect ke login
+    if (loggedInStatus === null || loggedInStatus === "false") {
+      alert("Kalau mau mulai ngantri, login dulu!");
+      navigate("/login");
+    }
+  }, []);
+
   //mengperbolehkan pengambilan data dari url
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -101,9 +112,6 @@ const Konfirmasi = () => {
     const formattedRandomNumber = randomNum.toString().padStart(3, "0");
     setRandomNumber(formattedRandomNumber);
   }, []);
-
-  /* navigasi ke beranda */
-  const navigate = useNavigate();
 
   //state popup
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -302,7 +310,17 @@ const Konfirmasi = () => {
                     </InputAdornment>
                   ),
                 }}
+                InputLabelProps={{ shrink: true }}
                 variant="standard"
+                sx={{
+                  "& .MuiInputBase-input.Mui-disabled": {
+                    WebkitTextFillColor: "black",
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: 'black', // Change label color to black
+                  },
+                }}
+                disabled
               />
               <TextField
                 label="Email"
@@ -315,7 +333,17 @@ const Konfirmasi = () => {
                     </InputAdornment>
                   ),
                 }}
+                InputLabelProps={{ shrink: true }}
                 variant="standard"
+                sx={{
+                  "& .MuiInputBase-input.Mui-disabled": {
+                    WebkitTextFillColor: "black",
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: 'black', // Change label color to black
+                  },
+                }}
+                disabled
               />
               <TextField
                 label="No. Telpon"
@@ -328,7 +356,17 @@ const Konfirmasi = () => {
                     </InputAdornment>
                   ),
                 }}
+                InputLabelProps={{ shrink: true }}
                 variant="standard"
+                sx={{
+                  "& .MuiInputBase-input.Mui-disabled": {
+                    WebkitTextFillColor: "black",
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: 'black', // Change label color to black
+                  },
+                }}
+                disabled
               />
             </CardContent>
           </Card>

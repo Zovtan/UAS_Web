@@ -38,6 +38,7 @@ const Profile = () => {
   });
   const [isEditing, setIsEditing] = useState(false);
   const [passwordsMatch, setPasswordsMatch] = useState(true);
+  const [isEmailUnique, setIsEmailUnique] = useState(true);
 
   const profileId = localStorage.getItem("id");
   const pfp = localStorage.getItem("username");
@@ -63,14 +64,10 @@ const Profile = () => {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
+    setPasswordsMatch(true);
+    setIsEmailUnique(true);
+
     try {
-      if (profile.newPassword !== profile.confirmPassword) {
-        setPasswordsMatch(false);
-        return; //return kosong memaksakan berhenti fungi
-      }
-
-      setPasswordsMatch(true);
-
       const token = localStorage.getItem("token");
       const response = await axios.patch(
         `http://localhost:3031/profile/${profileId}`,
@@ -91,6 +88,41 @@ const Profile = () => {
       }
     } catch (err) {
       console.error(err);
+
+      // Check the status code and handle each error case separately
+      if (err.response) {
+        const statusCode = err.response.status;
+
+        if (statusCode === 402) {
+          setIsEmailUnique(false); //cek keunikan email
+        } else if (statusCode === 403) {
+          setPasswordsMatch(false); //cek kesamaan password
+        }
+      } else {
+        console.error("An unexpected error occurred:", err.message);
+      }
+    }
+  };
+
+  const handleDelete = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.delete(
+        `http://localhost:3031/profile/${profileId}`,
+        { headers: { auth: token } }
+      );
+
+      if (response.status === 200) {
+        localStorage.removeItem("loggedInStatus");
+        localStorage.removeItem("id");
+        localStorage.removeItem("username");
+        localStorage.removeItem("token");
+        alert("Hapus profile berhasil");
+        navigate("/login");
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -108,20 +140,50 @@ const Profile = () => {
       <Container
         maxWidth="x1"
         sx={{
-          mt: "15vh",
+          mt: { xs: "10vh", md: "15vh" },
           display: "flex",
           flexDirection: { xs: "column", md: "row" },
-          height: "50vh",
         }}
       >
-        <Box sx={{ background: "red", padding: "3vh" }}>
-          <Avatar alt={pfp} src="/static/images/avatar/2.jpg" />
-          <Typography>Pengguna Standard</Typography>
+        <Box
+          sx={{
+            padding: "3vh",
+            borderTopLeftRadius: "1vh",
+            borderTopRightRadius: { xs: "1vh", md: "0vh" },
+            borderBottomLeftRadius: { xs: "0vh", md: "1vh" },
+            border: 2,
+            borderColor: "lightgrey",
+            boxShadow: 2,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexDirection: { xs: "column", md: "row" },
+            }}
+          >
+            <Avatar
+              alt={pfp}
+              src="/static/images/avatar/2.jpg"
+              sx={{
+                mr: { xs: "0vh", md: "2vh" },
+                mb: { xs: "1vh", md: "0vh" },
+              }}
+            />
+            <Typography>Pengguna Standard</Typography>
+          </Box>
+
           <Box
             component="img"
             sx={{
               height: "20vh",
               width: "25vh",
+              mt: "2vh",
             }}
             alt="Credit Score"
             src={CS}
@@ -129,17 +191,22 @@ const Profile = () => {
         </Box>
         <Box
           sx={{
-            background: "blue",
             flex: "1",
             padding: "3vh",
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
+            padding: "3vh",
+            borderBottomLeftRadius: { xs: "1vh", md: "0vh" },
+            borderBottomRightRadius: "1vh",
+            borderTopRightRadius: { xs: "0vh", md: "1vh" },
+            border: 2,
+            borderColor: "lightgrey",
+            boxShadow: 2,
           }}
         >
           <Box
             sx={{
-              background: "white",
               display: "flex",
               flexDirection: "column",
             }}
@@ -248,6 +315,9 @@ const Profile = () => {
                     },
                   }}
                 />
+                {isEditing && !profile.newPassword && (
+                  <Typography color="error">Mohon isi password untuk melanjutkan!</Typography>
+                )}
                 <TextField
                   type="password"
                   label="Konfirmasi Password"
@@ -274,43 +344,62 @@ const Profile = () => {
               </>
             )}
           </Box>
+          {/* hanya muncul dalam mode editing */}
+          {isEditing && !passwordsMatch && (
+            <Typography color="error" sx={{ mt: 1, alignSelf: "end" }}>
+              Password tidak sama!
+            </Typography>
+          )}
+          {isEditing && !isEmailUnique && (
+            <Typography color="error" sx={{ mt: 1, alignSelf: "end" }}>
+              Email sudah terpakai!
+            </Typography>
+          )}
           <Box
             sx={{
-              background: "yellow",
               display: "flex",
-              justifyContent: "right",
+              justifyContent: "space-between",
               width: "100%",
+              mt: "2vh",
             }}
           >
-            {/* hanya muncul dalam mode editing */}
-            {isEditing && (
-              <Button color="error" onClick={handleCancelClick}>
-                Batal
-              </Button>
-            )}
-            {!passwordsMatch && (
-              <Typography color="error" sx={{ mb: 2 }}>
-                Password tidak sama!
-              </Typography>
-            )}
-            {/* cek mode editing */}
-            {isEditing ? (
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleUpdate}
-              >
-                Kirim
-              </Button>
-            ) : (
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleEditClick}
-              >
-                Edit Profil
-              </Button>
-            )}
+            <span>
+              {isEditing && (
+                <Button
+                  variant="contained"
+                  color="error"
+                  onClick={handleDelete}
+                  sx={{ justifySelf: "left" }}
+                >
+                  Hapus Akun
+                </Button>
+              )}
+            </span>
+            <span>
+              {isEditing && (
+                <Button color="error" onClick={handleCancelClick}>
+                  Batal
+                </Button>
+              )}
+              {/* cek mode editing */}
+              {isEditing ? (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleUpdate}
+                >
+                  Kirim
+                </Button>
+              ) : (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleEditClick}
+                >
+                  Edit Profil
+                </Button>
+              )}
+            </span>
           </Box>
         </Box>
       </Container>

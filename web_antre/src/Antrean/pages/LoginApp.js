@@ -70,13 +70,6 @@ const LoginApp = () => {
     }
   };
 
-useEffect(() => {
-    localStorage.removeItem('loggedInStatus');
-    localStorage.removeItem('id');
-    localStorage.removeItem('username');
-    localStorage.removeItem('token');
-}, []);
-
   return (
     <div
       className="log-container"

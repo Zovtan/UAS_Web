@@ -36,15 +36,24 @@ function Navbar() {
   };
 
   //handling navigasi
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleNav = (target) => {
-    navigate(`${target}`)
-  }
+    navigate(`${target}`);
+  };
 
   //ambil data pengguna utk pfp dan navigasi
-  const pfp = localStorage.getItem("username")
-  const profileId = localStorage.getItem("id")
+  const pfp = localStorage.getItem("username");
+  const profileId = localStorage.getItem("id");
+
+  //hapus local storage kalo menekan log out
+  const handleLogout = () => {
+    localStorage.removeItem("loggedInStatus");
+    localStorage.removeItem("id");
+    localStorage.removeItem("username");
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
 
   return (
     <AppBar position="fixed">
@@ -107,17 +116,39 @@ function Navbar() {
                 display: { xs: "block", md: "none" },
               }}
             >
-              <MenuItem onClick={() => {handleNav("/")}}>
+              <MenuItem
+                onClick={() => {
+                  handleNav("/");
+                }}
+              >
                 <Typography textAlign="center">Beranda</Typography>
               </MenuItem>
-              <MenuItem >
-                <Link href="/#terdekat" textAlign="center" sx={{textDecoration:"none", color:"black"}}>Restoran Terdekat</Link>
+              <MenuItem>
+                <Link
+                  href="/#terdekat"
+                  textAlign="center"
+                  sx={{ textDecoration: "none", color: "black" }}
+                >
+                  Restoran Terdekat
+                </Link>
               </MenuItem>
-              <MenuItem >
-                <Link href="/#sponsor" textAlign="center" sx={{textDecoration:"none", color:"black"}}>Restoran Sponsor</Link>
+              <MenuItem>
+                <Link
+                  href="/#sponsor"
+                  textAlign="center"
+                  sx={{ textDecoration: "none", color: "black" }}
+                >
+                  Restoran Sponsor
+                </Link>
               </MenuItem>
-              <MenuItem >
-                <Link href="/#populer" textAlign="center" sx={{textDecoration:"none", color:"black"}}>Restoran Populer</Link>
+              <MenuItem>
+                <Link
+                  href="/#populer"
+                  textAlign="center"
+                  sx={{ textDecoration: "none", color: "black" }}
+                >
+                  Restoran Populer
+                </Link>
               </MenuItem>
               <MenuItem onClick={handleCloseNavMenu}>
                 <Typography textAlign="center">Riwayat</Typography>
@@ -153,30 +184,29 @@ function Navbar() {
             ANTRE
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            
             <Button
-            href="/"
+              href="/"
               onClick={handleCloseNavMenu}
               sx={{ my: 2, color: "white", display: "block" }}
             >
               Beranda
             </Button>
             <Button
-            href="/#terdekat"
+              href="/#terdekat"
               onClick={handleCloseNavMenu}
               sx={{ my: 2, color: "white", display: "block" }}
             >
               Restoran Terdekat
             </Button>
             <Button
-            href="/#sponsor"
+              href="/#sponsor"
               onClick={handleCloseNavMenu}
               sx={{ my: 2, color: "white", display: "block" }}
             >
               Restoran Sponsor
             </Button>
             <Button
-            href="/#populer"
+              href="/#populer"
               onClick={handleCloseNavMenu}
               sx={{ my: 2, color: "white", display: "block" }}
             >
@@ -212,14 +242,20 @@ function Navbar() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              <MenuItem onClick={() => {handleNav(`/profil/${profileId}`)}}>
+              <MenuItem
+                onClick={() => {
+                  handleNav(`/profil/${profileId}`);
+                }}
+              >
                 <Typography textAlign="center">Profil</Typography>
               </MenuItem>
               <MenuItem onClick={handleCloseUserMenu}>
                 <Typography textAlign="center">Pengaturan</Typography>
               </MenuItem>
-              <MenuItem  onClick={() => {handleNav("/login")} }>
-                <Typography textAlign="center" color="error">Log Out</Typography>
+              <MenuItem onClick={() =>{handleLogout()}}>
+                <Typography textAlign="center" color="error">
+                  Log Out
+                </Typography>
               </MenuItem>
             </Menu>
           </Box>

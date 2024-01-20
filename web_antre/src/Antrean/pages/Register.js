@@ -14,7 +14,6 @@ function RegistrationForm() {
     password: "",
     confirmPassword: "",
   });
-
   const [passwordsMatch, setPasswordsMatch] = useState(true);
   const [isEmailUnique, setIsEmailUnique] = useState(true);
   const [isFormValid, setIsFormValid] = useState(true);
@@ -27,28 +26,11 @@ function RegistrationForm() {
     });
   };
 
-  /*   const handleSubmit = (e) => {
-    e.preventDefault();
-    // Check if passwords match before submitting
-    if (formData.password !== formData.confirmPassword) {
-      setPasswordsMatch(false);
-      return;
-    }
-    setPasswordsMatch(true);
-    // Add your form submission logic here
-    navigate("/");
-  }; */
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Check if passwords match before submitting
-    if (formData.password !== formData.confirmPassword) {
-      setPasswordsMatch(false);
-      return;
-    }
     setPasswordsMatch(true);
     setIsFormValid(true);
+    setIsEmailUnique(true);
 
     try {
       // Send a request to the backend to check username availability
@@ -59,7 +41,7 @@ function RegistrationForm() {
           noHp: formData.noHp,
           username: formData.username,
           password: formData.password,
-          confirmPassword: formData.confirmPassword
+          confirmPassword: formData.confirmPassword,
         }
       );
 
@@ -67,14 +49,24 @@ function RegistrationForm() {
         setIsEmailUnique(true);
         alert("Registrasi Berhasil");
         navigate("/login");
-      }/*  else if (response.status === 401) {
-        setIsFormValid(false);
-      } else if (response.status === 409){
-        setIsEmailUnique(false)
-      } */
+      }
     } catch (err) {
       console.error(err);
-      setIsFormValid(false);
+
+      // Check the status code and handle each error case separately
+      if (err.response) {
+        const statusCode = err.response.status;
+
+        if (statusCode === 401) {
+          setIsFormValid(false); //cek kelengkapan form
+        } else if (statusCode === 402) {
+          setIsEmailUnique(false); //cek keunikan email
+        } else if (statusCode === 403) {
+          setPasswordsMatch(false); //cek kesamaan password
+        }
+      } else {
+        console.error("An unexpected error occurred:", err.message);
+      }
     }
   };
 
@@ -210,7 +202,7 @@ function RegistrationForm() {
           )}
           {!isFormValid && (
             <Typography color="error" sx={{ mb: 2 }}>
-              Mohon isi form dengan benar!
+              Mohon isi form dengan lengkap!
             </Typography>
           )}
           <Box sx={{ display: "flex", justifyContent: "center" }}>

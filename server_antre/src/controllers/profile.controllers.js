@@ -2,25 +2,6 @@ const db = require("../database/database.connection");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
-const readProfiles = async (req, res) => {
-  try {
-    const query = "SELECT * FROM profiles;";
-    const data = await db.query(query);
-    res.status(200).json({
-      message: "get all profiles success",
-      status: res.statusCode,
-      profiles: data[0],
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(400).json({
-      message: "get all profiles fail",
-      statusCode: res.status,
-      serverMessage: err,
-    });
-  }
-};
-
 const readProfile = async (req, res) => {
   try {
     const id = req.params.id;
@@ -47,13 +28,27 @@ const updateProfile = async (req, res) => {
     const id = req.params.id;
 
     if (password !== confirmPassword) {
-      return res.status(400).json({ message: "Passwords do not match" });
+      return res.status(403).json({ message: "Passwords do not match" });
+    }
+
+    //cek email yg sudah ada kecuali email yg sedang edit
+    const existingEmail = await db.query(
+      "SELECT * FROM profiles WHERE email = LOWER(?) AND profile_id != ?",
+      [email.trim(), id]
+    );
+    
+    if (existingEmail && existingEmail[0].length > 0) {
+      // email udh ada
+      return res.status(402).json({
+        message: "Email already exist",
+        status: res.statusCode,
+      });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const query =
       "UPDATE profiles SET email = LOWER(?), noHp = ?, username = ?, password = ? WHERE profile_id = ?";
-    await db.query(query, [email, noHp, username, hashedPassword, id]);
+    await db.query(query, [email.trim(), noHp, username, hashedPassword, id]);
     res.status(200).json({
       message: "updated profiles success",
       status: res.statusCode,
@@ -102,7 +97,6 @@ const login = async (req, res) => {
 
     const user = data[0];
     const match = await bcrypt.compare(password, user.password);
-    console.log(password, user.password, match)
     if (!match) {
       return res.status(401).json({ message: "Password doesnt match" });
     }
@@ -131,7 +125,7 @@ const register = async (req, res) => {
 
     // Cek kalo email null / tdk
     if (!lowercaseEmail || !username || !password) {
-      return res.status(400).json({
+      return res.status(401).json({
         message: "Please fill the data completely",
         status: res.statusCode,
       });
@@ -144,7 +138,7 @@ const register = async (req, res) => {
 
     if (existingEmail && existingEmail[0].length > 0) {
       // email udh ada
-      return res.status(409).json({
+      return res.status(402).json({
         message: "Email already exist",
         status: res.statusCode,
       });
@@ -152,13 +146,13 @@ const register = async (req, res) => {
     //lanjut jika unik
 
     if (password !== confirmPassword) {
-      return res.status(400).json({ message: "Passwords do not match" });
+      return res.status(403).json({ message: "Passwords do not match" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const [result] = await db.execute(
       "INSERT INTO profiles ( email, noHp, username, password) VALUES (?, ?, ?, ?)",
-      [lowercaseEmail, noHp || null, username, hashedPassword]
+      [lowercaseEmail.trim(), noHp || null, username, hashedPassword]
     );
     res.status(201).json({
       message: "User registered successfully",
@@ -171,7 +165,6 @@ const register = async (req, res) => {
 };
 module.exports = {
   readProfile,
-  readProfiles,
   updateProfile,
   deleteProfile,
   login,
